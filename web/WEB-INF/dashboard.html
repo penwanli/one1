@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科协管理系统</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header>
+  <h1>科协管理系统</h1>
+  <nav>
+    <ul>
+      <li><a href="/static/html/dashboard.html">首页</a></li>
+      <li><a href="/static/html/groups.html">小组管理</a></li>
+      <li><a href="/static/html/members.html">成员管理</a></li>
+      <li><a href="#" id="logout">退出登录</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section id="userInfo">
+    <h2>用户信息</h2>
+    <div id="userDetails"></div>
+  </section>
+
+  <section id="quickActions">
+    <h2>快捷操作</h2>
+    <div class="actions">
+      <button onclick="location.href='/static/html/add-group.html'">添加小组</button>
+      <button onclick="location.href='/static/html/add-member.html'">添加成员</button>
+    </div>
+  </section>
+
+<script>
+  // fetch('/api/user/')
+  //         .then(response => response.json())
+  //         .then(data => {
+  //           if (data.success) {
+  //             const user = data.data;
+  //             document.getElementById('userDetails').innerHTML = `
+  //                       <p><strong>用户名:</strong> ${user.username}</p>
+  //                       <p><strong>姓名: </strong> ${user.realName || '未设置'}</p>
+  //                       <p><strong>邮箱: </strong> ${user.email || '未设置'}</p>
+  //                       <p><strong>电话: </strong> ${user.phone || '未设置'}</p>
+  //                   `;
+  //           } else {
+  //             window.location.href = '/static/html/login.html';
+  //           }
+  //         })
+  //         .catch(error => {
+  //           console.error('Error:', error);
+  //           window.location.href = '/static/html/login.html';
+  //         });
+
+  document.getElementById('logout').addEventListener('click', function(e) {
+    e.preventDefault();
+    fetch('/api/user/logout', {
+      method: 'POST'
+    })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = '/static/html/login.html';
+              }
+            });
+  });
+</script>
+</body>
+</html>
