@@ -1,71 +1,296 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>科协管理系统</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>科协管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#6366f1',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        neutral: {
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03)',
+                        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                },
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-icon {
+                @apply relative flex items-center justify-center h-12 w-12 mt-2 mb-2 mx-auto shadow-lg
+                bg-white text-primary hover:bg-primary hover:text-white hover:rounded-xl rounded-3xl
+                transition-all duration-300 ease-linear cursor-pointer;
+            }
+            .sidebar-tooltip {
+                @apply absolute w-auto p-2 m-2 min-w-max left-14 rounded-md shadow-md
+                text-white bg-neutral-900 text-xs font-bold
+                transition-all duration-100 scale-0 origin-left;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg
+                transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+            }
+            .card {
+                @apply bg-white rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-card-hover;
+            }
+        }
+    </style>
 </head>
-<body>
-<header>
-  <h1>科协管理系统</h1>
-  <nav>
-    <ul>
-      <li><a href="/static/html/dashboard.html">首页</a></li>
-      <li><a href="/static/html/groups.html">小组管理</a></li>
-      <li><a href="/static/html/members.html">成员管理</a></li>
-      <li><a href="#" id="logout">退出登录</a></li>
-    </ul>
-  </nav>
-</header>
+<body class="font-inter bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-primary flex items-center">
+                    <i class="fa fa-rocket mr-2"></i>
+                    <span>科协管理系统</span>
+                </h1>
+            </div>
 
-<main>
-  <section id="userInfo">
-    <h2>用户信息</h2>
-    <div id="userDetails"></div>
-  </section>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/static/html/dashboard.html" class="text-primary font-medium hover:text-primary/80 transition-colors flex items-center">
+                    <i class="fa fa-home mr-2"></i>首页
+                </a>
+                <a href="/static/html/groups.html" class="text-neutral-600 font-medium hover:text-primary transition-colors flex items-center">
+                    <i class="fa fa-users mr-2"></i>小组管理
+                </a>
+                <a href="/static/html/members.html" class="text-neutral-600 font-medium hover:text-primary transition-colors flex items-center">
+                    <i class="fa fa-user-circle mr-2"></i>成员管理
+                </a>
+                <a href="#" id="logout" class="text-neutral-600 font-medium hover:text-danger transition-colors flex items-center">
+                    <i class="fa fa-sign-out mr-2"></i>退出登录
+                </a>
+            </nav>
 
-  <section id="quickActions">
-    <h2>快捷操作</h2>
-    <div class="actions">
-      <button onclick="location.href='/static/html/add-group.html'">添加小组</button>
-      <button onclick="location.href='/static/html/add-member.html'">添加成员</button>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-neutral-600 hover:text-primary focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
     </div>
-  </section>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="/static/html/dashboard.html" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">首页</a>
+            <a href="/static/html/groups.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-600 hover:text-primary hover:bg-blue-50">小组管理</a>
+            <a href="/static/html/members.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-600 hover:text-primary hover:bg-blue-50">成员管理</a>
+            <a href="#" id="logout-mobile" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-600 hover:text-danger hover:bg-red-50">退出登录</a>
+        </div>
+    </div>
+</header>
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section id="userInfo" class="lg:col-span-1">
+            <div class="card">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="relative">
+                        <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fa fa-user-circle text-6xl text-primary"></i>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 bg-success text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                            <i class="fa fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-bold text-center mb-6 text-neutral-800">用户信息</h2>
+
+                <div id="userDetails" class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                            <i class="fa fa-user"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-neutral-500">用户名</p>
+                            <p class="font-medium text-neutral-800">admin</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                            <i class="fa fa-id-card"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-neutral-500">姓名</p>
+                            <p class="font-medium text-neutral-800">管理员</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-neutral-500">邮箱</p>
+                            <p class="font-medium text-neutral-800">admin@example.com</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-neutral-500">电话</p>
+                            <p class="font-medium text-neutral-800">138****1234</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-full mt-6 py-2 px-4 bg-primary/10 text-primary font-medium rounded-lg hover:bg-primary/20 transition-colors duration-300">
+                    <i class="fa fa-user-circle mr-2"></i>编辑个人信息
+                </button>
+            </div>
+        </section>
+        <section class="lg:col-span-2 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-primary">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-neutral-500 font-medium">小组总数</p>
+                            <h3 class="text-3xl font-bold text-neutral-800 mt-1">0</h3>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center">
+                            <i class="fa fa-users text-2xl text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-success">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-neutral-500 font-medium">成员总数</p>
+                            <h3 class="text-3xl font-bold text-neutral-800 mt-1">0</h3>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center">
+                            <i class="fa fa-user-circle text-2xl text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2 class="text-xl font-bold mb-6 text-neutral-800">快捷操作</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="location.href='/static/html/add-group.html'" class="btn-primary flex items-center justify-center">
+                        <i class="fa fa-plus-circle mr-2"></i>添加小组
+                    </button>
+
+                    <button onclick="location.href='/static/html/add-member.html'" class="btn-primary flex items-center justify-center">
+                        <i class="fa fa-user-plus mr-2"></i>添加成员
+                    </button>
+
+                    <button class="btn-primary flex items-center justify-center bg-secondary hover:bg-secondary/90">
+                        <i class="fa fa-file-excel mr-2"></i>导出数据
+                    </button>
+
+                    <button class="btn-primary flex items-center justify-center bg-neutral-700 hover:bg-neutral-800">
+                        <i class="fa fa-cog mr-2"></i>系统设置
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<footer class="bg-white border-t border-gray-200 mt-12">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <p class="text-neutral-500 text-sm">© 2025 科协管理系统. 保留所有权利.</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-neutral-400 hover:text-primary transition-colors">
+                    <i class="fa fa-question-circle"></i> 帮助中心
+                </a>
+                <a href="#" class="text-neutral-400 hover:text-primary transition-colors">
+                    <i class="fa fa-file-text"></i> 使用条款
+                </a>
+                <a href="#" class="text-neutral-400 hover:text-primary transition-colors">
+                    <i class="fa fa-shield"></i> 隐私政策
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <script>
-  // fetch('/api/user/')
-  //         .then(response => response.json())
-  //         .then(data => {
-  //           if (data.success) {
-  //             const user = data.data;
-  //             document.getElementById('userDetails').innerHTML = `
-  //                       <p><strong>用户名:</strong> ${user.username}</p>
-  //                       <p><strong>姓名: </strong> ${user.realName || '未设置'}</p>
-  //                       <p><strong>邮箱: </strong> ${user.email || '未设置'}</p>
-  //                       <p><strong>电话: </strong> ${user.phone || '未设置'}</p>
-  //                   `;
-  //           } else {
-  //             window.location.href = '/static/html/login.html';
-  //           }
-  //         })
-  //         .catch(error => {
-  //           console.error('Error:', error);
-  //           window.location.href = '/static/html/login.html';
-  //         });
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+    document.getElementById('logout').addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+    });
 
-  document.getElementById('logout').addEventListener('click', function(e) {
-    e.preventDefault();
-    fetch('/api/user/logout', {
-      method: 'POST'
-    })
+    document.getElementById('logout-mobile').addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+    });
+
+    function logout() {
+        fetch('/api/user/logout', {
+            method: 'POST'
+        })
             .then(response => response.json())
             .then(data => {
-              if (data.success) {
-                window.location.href = '/static/html/login.html';
-              }
+                if (data.success) {
+                    window.location.href = '/static/html/login.html';
+                }
             });
-  });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const fadeElements = document.querySelectorAll('.card');
+        fadeElements.forEach((el, index) => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    });
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 10) {
+            header.classList.add('shadow-lg');
+            header.classList.add('bg-white/95');
+            header.classList.add('backdrop-blur-sm');
+        } else {
+            header.classList.remove('shadow-lg');
+            header.classList.remove('bg-white/95');
+            header.classList.remove('backdrop-blur-sm');
+        }
+    });
 </script>
 </body>
 </html>
